@@ -38,15 +38,12 @@
             }, () => {
                // Play stream
                 registerIVSQualityPlugin(videojs); // where videojs is the video.js variable
-                player.src(PLAYBACK_URL);
+                player.src(PLAYBAC_URL);
                 player.enableIVSQualityPlugin(); // where player is the instance of the videojs player
 
                 const events = player.getIVSEvents();
-                console.log(events.PlayerEventType.TEXT_METADATA_CUE);
                 player.getIVSPlayer().addEventListener(events.PlayerEventType.TEXT_METADATA_CUE, (cue) => {
-                    console.log(cue);
                     const item = JSON.parse(cue.text);
-                    console.log(item);
                     if (item && item.type === 'image') {
                         document.getElementById('hearts').innerHTML = document.getElementById('hearts').innerHTML + '♥';
                         document.getElementById('total').innerHTML = +document.getElementById('total').innerHTML + 1;

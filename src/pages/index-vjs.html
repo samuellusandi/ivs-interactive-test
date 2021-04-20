@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.6.6/video-js.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.6.6/video.min.js"></script>
+    <script src="https://player.live-video.net/1.2.0/amazon-ivs-videojs-tech.min.js"></script>
+    <script src="https://player.live-video.net/1.2.0/amazon-ivs-quality-plugin.min.js"></script>
+</head>
+
+<body>
+    <div class="video-container">
+        <video id="video-player" class="video-js vjs-4-3 vjs-big-play-centered" controls autoplay playsinline></video>
+        <div id="hearts"></div>
+        <div id="total">0</div>
+    </div>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .video-container {
+            width: 640px;
+            height: 480px;
+            margin: 15px;
+        }
+    </style>
+    <script>
+        (function play() {
+            // Get playback URL from Amazon IVS API
+            var PLAYBACK_URL = '';
+            
+            // Register Amazon IVS as playback technology for Video.js
+            registerIVSTech(videojs);
+
+            // Initialize player
+            var player = videojs('video-player', {
+               techOrder: ["AmazonIVS"]
+            }, () => {
+               // Play stream
+                registerIVSQualityPlugin(videojs); // where videojs is the video.js variable
+                player.src(PLAYBACK_URL);
+                player.enableIVSQualityPlugin(); // where player is the instance of the videojs player
+
+                const events = player.getIVSEvents();
+                console.log(events.PlayerEventType.TEXT_METADATA_CUE);
+                player.getIVSPlayer().addEventListener(events.PlayerEventType.TEXT_METADATA_CUE, (cue) => {
+                    console.log(cue);
+                    const item = JSON.parse(cue.text);
+                    console.log(item);
+                    if (item && item.type === 'image') {
+                        document.getElementById('hearts').innerHTML = document.getElementById('hearts').innerHTML + '♥';
+                        document.getElementById('total').innerHTML = +document.getElementById('total').innerHTML + 1;
+                    }
+                });
+            });
+        })();
+
+        document.getElementById('video-player').addEventListener('click', (e) => {
+        fetch('http://localhost:3000/emoji', {
+            method: 'POST',
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer',
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'localhost'
+            },
+            body: JSON.stringify({
+                type: 'image',
+            })
+        })
+        .then(() => {})
+        .catch((e) => console.log(e));
+        });
+    </script>
+</body>
+</html>

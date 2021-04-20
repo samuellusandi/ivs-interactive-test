@@ -31,6 +31,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/pages/index.html'));
 });
 
+app.get('/vjs', (req, res) => {
+    res.sendFile(path.join(__dirname + '/pages/index-vjs.html'));
+});
+
 app.post('/emoji', (req, res) => {
     const body = req.body;
     if (body && Object.keys(body).length !== 0) {

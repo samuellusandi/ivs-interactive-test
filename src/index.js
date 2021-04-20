@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const AWS = require('aws-sdk');
 const cors = require('cors');
 const express = require('express');
+var path = require('path');
 
 dotenv.config();
 
@@ -27,11 +28,7 @@ app.use(cors());
 app.options('*', cors());
 
 app.get('/', (req, res) => {
-    res
-        .status(200)
-        .send({
-            message: 'Hello, world!'
-        });
+    res.sendFile(path.join(__dirname + '/pages/index.html'));
 });
 
 app.post('/emoji', (req, res) => {

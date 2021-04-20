@@ -1,0 +1,44 @@
+<head>
+  <script src="https://player.live-video.net/1.2.0/amazon-ivs-player.min.js"></script>
+</head>
+<body>
+  <video id="video-player" playsinline></video>
+  <div id="hearts"></div>
+  <div id="total">0</div>
+  
+  <script>
+    if (IVSPlayer.isPlayerSupported) {
+      const player = IVSPlayer.create();
+      player.addEventListener(IVSPlayer.PlayerEventType.TEXT_METADATA_CUE, (cue) => {
+        const item = JSON.parse(cue.text);
+        console.log(item);
+        if (item && item.type === 'image') {
+          document.getElementById('hearts').innerHTML = document.getElementById('hearts').innerHTML + '♥';
+          document.getElementById('total').innerHTML = +document.getElementById('total').innerHTML + 1;
+        }
+      });
+      player.attachHTMLVideoElement(document.getElementById('video-player'));
+      player.load(PLAYBAC_URL);
+      player.play();
+    }
+
+    document.getElementById('video-player').addEventListener('click', (e) => {
+      fetch('http://localhost:3000/emoji', {
+        method: 'POST',
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'localhost'
+        },
+        body: JSON.stringify({
+          type: 'image',
+        })
+      }).then(() => {})
+      .catch((e) => console.log(e));
+    });
+  </script>
+</body>
